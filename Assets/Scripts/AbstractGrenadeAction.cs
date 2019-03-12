@@ -40,7 +40,7 @@ public abstract class AbstractGrenadeAction : MonoBehaviour
                 //if the check is definitely overlapping and it is valid
                 if (stageCheck.isOverlapped && stageCheck.isValid)
                 {
-                    //Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);//draw a line to show the two points created
+                    //Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);//draw a line to show the two points created THIS IS FOR DEBUGGING
 
                     //create the correction vector, this is done by taking the normal (direction) of the stage check and the distance of the stage check and multiplying them together
                     Vector2 correction = (stageCheck.normal * stageCheck.distance);

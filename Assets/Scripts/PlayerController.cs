@@ -185,7 +185,7 @@ public class PlayerController : MonoBehaviour
         prevVelocity = totalVelocity;
     }   
 
-    private void TryCorrectPosition(Collider2D[] incomingColliders)
+    public void TryCorrectPosition(Collider2D[] incomingColliders)
     {
         foreach (Collider2D incomingCollider in incomingColliders)
         {
@@ -269,20 +269,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
-    /// <summary>
-    /// //////////////////////////POTENTIALLY CUTTING THIS
-    /// </summary>
-   /* private void ApplyGravity()
-    {
-        //if the player is not grounded
-        if (grounded == false && inGeyser == false)
-        {
-            //clamp the velocity between the terminal velocity and the intial velocity
-            Mathf.Clamp(rb.velocity.y, terminalVelocity, jumpVelocity);
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + (gravityValue * Time.fixedDeltaTime));
-        }
-    }*/
 
     private void CheckInputs()
     {
