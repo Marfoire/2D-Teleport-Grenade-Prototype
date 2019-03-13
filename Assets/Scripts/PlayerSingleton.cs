@@ -11,4 +11,14 @@ public class PlayerSingleton : MonoBehaviour
     {
         playerGameObject = gameObject;
     }
+
+    private void Update()
+    {
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.Pause))
+        {
+            Debug.Break();
+        }
+#endif
+    }
 }
