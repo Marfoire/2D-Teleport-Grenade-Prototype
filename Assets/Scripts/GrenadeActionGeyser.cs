@@ -26,7 +26,7 @@ public class GrenadeActionGeyser : AbstractGrenadeAction
 
         //call the grenade action
         GrenadeAction();
-        
+
     }
 
 
@@ -35,10 +35,10 @@ public class GrenadeActionGeyser : AbstractGrenadeAction
         //try to correct the position
         TryCorrectGrenadePosition();
 
-        //if the grenade collided with a moveable object, do not do the following
-        if (collidedSurface.gameObject.tag != "MoveableObject")
+        //if the grenade collided with something that wasn't the stage
+        if (collidedSurface.gameObject.tag == "Stage")
         {
-            //instantiate the geysey tool with the respective prefab
+            //instantiate the geyser tool with the respective prefab
             GameObject geyser = Instantiate(geyserPrefab, (Vector2)transform.position - -stageCheck.normal, Quaternion.FromToRotation(transform.up, -stageCheck.normal));
 
             //set the geyser's initiate coroutine bool to true to start the call for it's behavioural couroutine, if it is directly called here, it will bug out when this is destroyed
@@ -52,7 +52,7 @@ public class GrenadeActionGeyser : AbstractGrenadeAction
         Destroy(gameObject);
     }
 
-    
+
 
 
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;//rigidbody reference
     public BoxCollider2D bc;//boxcollider reference
 
-    
+
     RaycastHit2D groundedCheck;//raycast top check if the player is grounded
     RaycastHit2D leftWallCheck;//raycast check to the left to see if the 
     RaycastHit2D rightWallCheck;//raycast check to the right to see if the 
@@ -42,7 +43,7 @@ public class PlayerController : MonoBehaviour
     //booleans for if the player is jumping or if the player has used a double jump
     public bool isJumping;
     public bool doubleJumpUsed;
-    
+
     //variable that stores the current grenade type and an array that holds all of the grenade types so they can be cycled through
     public GameObject currentGrenadePrefab;
     public GameObject[] grenadeTypePrefabs;
@@ -63,8 +64,20 @@ public class PlayerController : MonoBehaviour
     ContactFilter2D filter;
     LayerMask stageMask;
 
+    //if the player is in the rift
+    public bool inRift;
+
+    //if there is an active rift in the scene
+    public bool activeRift;
+
+    //event to delete any active rifts when a new rift grenade is thrown
+    public UnityEvent overrideRift;
+
     void Awake()
     {
+        //set up the rift event
+        overrideRift = new UnityEvent();
+
         //make sure the contact filter is a contact filter
         filter = new ContactFilter2D();
 
@@ -105,25 +118,25 @@ public class PlayerController : MonoBehaviour
             {
                 isJumping = true;
             }
-            
+
             //apply the initial jump velocity
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + jumpVelocity);
         }
     }
 
-    //recycled from shipmotor
+    //handles horizontal movement, needs revamping
     public void HorizontalMovement()
     {
         //if the either of the input axis are receiving RAW input, start running some acceleration calculations (GetAxisRaw only returns 0,1,-1 based on what input is pressed)
         if (leftInputted == true || rightInputted == true)
         {
-                //If the acceleration time is not 0
+            //If the acceleration time is not 0
             if (AccelerationTime != 0)
             {
                 deltaVelocity = MaxSpeed / AccelerationTime * Time.fixedDeltaTime;//find acceleration delta velocity with maxSpeed divided by acceleration time
                 totalVelocity = prevVelocity + deltaVelocity;//add the delta velocity to the previous velocity to get the current total velocity                
             }
-            else if(AccelerationTime == 0)  //if the acceleration time is 0, don't worry about doing acceleration calculations
+            else if (AccelerationTime == 0)  //if the acceleration time is 0, don't worry about doing acceleration calculations
             {
                 totalVelocity = MaxSpeed;//set the velocity to the max speed
             }
@@ -161,10 +174,13 @@ public class PlayerController : MonoBehaviour
 
         if (inGeyser == false && rb.velocity.x != 0)
         {
-            if(rb.velocity.x > -15 && rb.velocity.x < 15)
-            rb.velocity = new Vector2(0, rb.velocity.y);
+            if (rb.velocity.x > -15 && rb.velocity.x < 15)
+                rb.velocity = new Vector2(0, rb.velocity.y);
 
-            rb.drag = 3;
+            if (grounded == true)
+            {
+                rb.drag = 3;
+            }
             if ((rb.velocity.x > 0 && storedLastHorizontalInput < 0) || (rb.velocity.x < 0 && storedLastHorizontalInput > 0))
             {
                 rb.velocity = new Vector2(rb.velocity.x / 1.1f, rb.velocity.y);
@@ -175,7 +191,7 @@ public class PlayerController : MonoBehaviour
         rb.position = new Vector2(rb.position.x + (totalVelocity * Time.fixedDeltaTime * storedLastHorizontalInput), rb.position.y);
 
 
-        if(totalVelocity == 0)
+        if (totalVelocity == 0)
         {
             storedLastHorizontalInput = 0;//reset the input to 0
         }
@@ -183,13 +199,13 @@ public class PlayerController : MonoBehaviour
 
         //set the previous velocity to the current total velocity for the next loop around with this function
         prevVelocity = totalVelocity;
-    }   
+    }
 
     public void TryCorrectPosition(Collider2D[] incomingColliders)
     {
         foreach (Collider2D incomingCollider in incomingColliders)
         {
-            if (incomingCollider != null && incomingCollider.gameObject.tag == "Stage")
+            if ((incomingCollider != null && incomingCollider.tag != "Geyser") || (incomingCollider != null && incomingCollider.tag == "Geyser" && upwardsGeyser == false))
             {
                 ColliderDistance2D stageCheck = bc.Distance(incomingCollider);
                 if (stageCheck.isOverlapped && stageCheck.isValid)
@@ -200,30 +216,39 @@ public class PlayerController : MonoBehaviour
                     transform.position = rb.position;
                 }
             }
-        }        
+        }
     }
 
-    //checkGrounded does some raycasting and position correcting for the purpose of keeping thje player grounded
+    //checkGrounded does some raycasting and position correcting for the purpose of keeping the player grounded
     void CheckGrounded()
     {
-        if (groundedCheck.collider != null)
+        if (groundedCheck.collider != null && !groundedCheck.collider.isTrigger)
         {//if the ray collider with something
 
-            if (groundedCheck.collider.bounds.center.y + groundedCheck.collider.bounds.extents.y - 1 < rb.position.y - bc.bounds.extents.y /*&& hit.collider.gameObject.tag == "Stage"*/ && groundedCheck.collider.isTrigger == false && upwardsGeyser == false)//if the ray is colliding with the topside of the stage piece it connected with
+            if (upwardsGeyser == false)//if the player isn't being pushed up by a geyser
             {
                 grounded = true;//set grounded to true
                 doubleJumpUsed = false;
                 isJumping = false;
                 rb.velocity = new Vector2(rb.velocity.x, 0);
                 rb.gravityScale = 0;
-                
+
             }
-            }
+            /*else//if there are no collisions
+            {
+                grounded = false;//set grounded to false
+                if (inGeyser == false)
+                {
+                    rb.gravityScale = 254.5f;
+                }
+
+            }*/
+        }
         else//if there are no collisions
         {
             grounded = false;//set grounded to false
             if (inGeyser == false)
-            {               
+            {
                 rb.gravityScale = 254.5f;
             }
 
@@ -279,6 +304,12 @@ public class PlayerController : MonoBehaviour
             nadeObject.GetComponent<GrenadeTossParabola>().GetInfo(this);
             Physics2D.IgnoreCollision(nadeObject.GetComponent<CircleCollider2D>(), bc);
             GetComponent<LineRenderer>().enabled = false;
+
+            if (activeRift == true && currentGrenadePrefab.name == "Grenade_Rift")
+            {
+                overrideRift.Invoke();
+            }
+
         }
 
         if (Input.GetButtonDown("Jump") == true)
@@ -288,14 +319,14 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey("left") == true || Input.GetKey("a"))
         {
-            if (!leftWallCheck)
+            if (!leftWallCheck || leftWallCheck.collider.isTrigger)
                 leftInputted = true;
             storedLastHorizontalInput = Input.GetAxisRaw("Horizontal");//store the input values in a vector2 for deceleration
         }
 
         if (Input.GetKey("right") == true || Input.GetKey("d"))
         {
-            if (!rightWallCheck)
+            if (!rightWallCheck || rightWallCheck.collider.isTrigger)
                 rightInputted = true;
             storedLastHorizontalInput = Input.GetAxisRaw("Horizontal");//store the input values in a vector2 for deceleration
         }
@@ -307,10 +338,10 @@ public class PlayerController : MonoBehaviour
 
         if (Input.mouseScrollDelta.y != 0)
         {
-            throwHeight = Mathf.Clamp(throwHeight + (Input.mouseScrollDelta.y*2), 150, 225);
+            throwHeight = Mathf.Clamp(throwHeight + (Input.mouseScrollDelta.y * 2), 150, 225);
         }
 
-        if(preventGrenadeThrow == false)
+        if (preventGrenadeThrow == false)
         {
             GetComponent<LineRenderer>().enabled = true;
         }
@@ -319,9 +350,9 @@ public class PlayerController : MonoBehaviour
 
     private void SwitchToNextGrenade()
     {
-        for(int i = 0; i < grenadeTypePrefabs.Length; i++)
+        for (int i = 0; i < grenadeTypePrefabs.Length; i++)
         {
-            if(grenadeTypePrefabs[i] == currentGrenadePrefab)
+            if (grenadeTypePrefabs[i] == currentGrenadePrefab)
             {
                 if (i + 1 < grenadeTypePrefabs.Length)
                 {
@@ -341,14 +372,12 @@ public class PlayerController : MonoBehaviour
     }
 
 
-
     private void CheckForLatePositionCorrection()
     {
-
+        Collider2D[] stageColliders = new Collider2D[10];
         if (correctMyPosition == false)
         {
-            RaycastHit2D lateHit = Physics2D.Raycast(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y - 0.1f)), Vector2.right, bc.bounds.extents.x * 2 - 0.1f, stageMask);
-            if (lateHit)
+            if (bc.OverlapCollider(filter, stageColliders) > 0)
             {
                 correctMyPosition = true;
             }
@@ -356,25 +385,26 @@ public class PlayerController : MonoBehaviour
 
         if (correctMyPosition == true)
         {
-            Collider2D[] stageColliders = new Collider2D[10];
             bc.OverlapCollider(filter, stageColliders);
-            TryCorrectPosition(stageColliders);           
+            TryCorrectPosition(stageColliders);
         }
         correctMyPosition = false;
     }
 
     private void CastWallAndGroundedChecks()
     {
-        /* these lines are for visualizing the rays that are casted below
-        Debug.DrawRay(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right * (bc.bounds.extents.x * 2 - 0.1f), Color.white);
+        //these lines are for visualizing the rays that are casted below
+        /*Debug.DrawRay(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right * (bc.bounds.extents.x * 2 - 0.1f), Color.white);
         Debug.DrawRay(new Vector2((rb.position.x) - (bc.bounds.extents.x + 0.5f), rb.position.y - (bc.bounds.extents.y - 0.1f)), Vector2.up * ((bc.bounds.extents.y * 2 - 0.8f)), Color.yellow);
         Debug.DrawRay(new Vector2((rb.position.x) + (bc.bounds.extents.x + 0.5f), rb.position.y - (bc.bounds.extents.y - 0.1f)), Vector2.up * ((bc.bounds.extents.y * 2 - 0.8f)), Color.yellow);
         */
 
-        groundedCheck = Physics2D.Raycast(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right, bc.bounds.extents.x * 2 - 0.1f);
+        groundedCheck = Physics2D.Raycast(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right, bc.bounds.extents.x * 2 - 0.1f, stageMask);
         leftWallCheck = Physics2D.Raycast(new Vector2((bc.bounds.center.x) - (bc.bounds.extents.x + 0.5f), bc.bounds.center.y - (bc.bounds.extents.y - 0.1f)), Vector2.up, (bc.bounds.extents.y * 2 - 0.8f), stageMask);
-        rightWallCheck = Physics2D.Raycast(new Vector2((bc.bounds.center.x) + (bc.bounds.extents.x + 0.5f), bc.bounds.center.y - (bc.bounds.extents.y - 0.1f)), Vector2.up, (bc.bounds.extents.y * 2 - 0.8f),stageMask);
+        rightWallCheck = Physics2D.Raycast(new Vector2((bc.bounds.center.x) + (bc.bounds.extents.x + 0.5f), bc.bounds.center.y - (bc.bounds.extents.y - 0.1f)), Vector2.up, (bc.bounds.extents.y * 2 - 0.8f), stageMask);
     }
+
+
 
     //if the player collides with something try and correct their position
     private void OnCollisionEnter2D(Collision2D collision)
@@ -390,6 +420,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+
         //reset the player's drag at the start of fixed update, this is necessary because horizontal movement conditionally changes the drag of the player
         rb.drag = 1.4f;
 
@@ -400,7 +431,7 @@ public class PlayerController : MonoBehaviour
         HorizontalMovement();
 
         //run jump call to make sure the player jumps if they input it
-        JumpCall();           
+        JumpCall();
 
         //turn all the inputted bools off in case the player is done inputting a specific action
         leftInputted = false;
@@ -408,19 +439,22 @@ public class PlayerController : MonoBehaviour
         jumpInputted = false;
     }
 
-    private void Update()
-    {
-        //check inputs every frame
-        CheckInputs();        
-    } 
+    /*private void Update()
+    {        
+        
+        
+    } */
 
     private void LateUpdate()
-    {                
+    {
         //run once last check to see if position correction should be done
         CheckForLatePositionCorrection();
 
         //case the wall and grounded raycast checks because they should be in line with the position of the player after all the other operations
         CastWallAndGroundedChecks();
+
+        //check inputs every frame
+        CheckInputs();
 
         //update the visual indicator of the grenade trajectory
         DrawThrowableLine();

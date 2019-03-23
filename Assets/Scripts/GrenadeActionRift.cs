@@ -33,14 +33,20 @@ public class GrenadeActionRift : AbstractGrenadeAction
         //try to correct the position
         TryCorrectGrenadePosition();
 
-        //if the grenade collided with a moveable object, do not do the following
-        if (collidedSurface.gameObject.tag != "MoveableObject")
+        //if the grenade collided with something that wasn't the stage
+        if (collidedSurface.gameObject.tag == "Stage")
         {
-            //instantiate the geysey tool with the respective prefab
+            //instantiate the rift tool with the respective prefab
             GameObject rift = Instantiate(riftPrefab, (Vector2)transform.position, Quaternion.identity);
 
-            //set the geyser's initiate coroutine bool to true to start the call for it's behavioural couroutine, if it is directly called here, it will bug out when this is destroyed
-            //geyser.GetComponent<ToolBehaviourGeyser>().initiateCoroutine = true;
+            //set the rift's initiate coroutine bool to true to start the call for it's behavioural couroutine, if it is directly called here, it will bug out when this is destroyed
+            rift.GetComponent<ToolBehaviourRift>().initiateCoroutine = true;
+
+            //get a player script reference
+            rift.GetComponent<ToolBehaviourRift>().playerReference = tossScriptReference.pScript;
+
+            //tell the player that there is now an active rift
+            tossScriptReference.pScript.activeRift = true;
         }
 
         //set the player's bool restricting grenade throws to be false because the player should be able to throw grenades again
