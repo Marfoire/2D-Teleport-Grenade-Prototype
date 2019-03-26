@@ -234,15 +234,6 @@ public class PlayerController : MonoBehaviour
                 rb.gravityScale = 0;
 
             }
-            /*else//if there are no collisions
-            {
-                grounded = false;//set grounded to false
-                if (inGeyser == false)
-                {
-                    rb.gravityScale = 254.5f;
-                }
-
-            }*/
         }
         else//if there are no collisions
         {
@@ -429,6 +420,9 @@ public class PlayerController : MonoBehaviour
 
         //call horizontal movement to check and ensure the player is moving if they are trying to move horizontally
         HorizontalMovement();
+
+        correctMyPosition = true;
+        CheckForLatePositionCorrection();
 
         //run jump call to make sure the player jumps if they input it
         JumpCall();
