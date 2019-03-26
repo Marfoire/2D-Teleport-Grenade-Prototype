@@ -15,32 +15,8 @@ public class Hazard : MonoBehaviour
 	{
 		//if the colliding object is the player
 		if (col.gameObject.tag == "Player"){
-			//MovePlayerToCheckpoint(col.gameObject);
-			
-			//delay their reset
-			StartCoroutine(DelayedMovePlayerBack(col.gameObject));
-			
-			//CHANGE LATER
-			//change the player's colour -> indicate hit?
-			playerOgColour = col.gameObject.GetComponent<SpriteRenderer>().color;
-			col.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+            col.GetComponent<PlayerHealth>().PlayerDeath();
 		}	
-	}
-	
-	private void MovePlayerToCheckpoint(GameObject player){
-		//move the player/rb to the last checkpoint
-		player.transform.position = checkpoint.position;
-		player.GetComponent<Rigidbody2D>().position = checkpoint.position;
-		
-		//CHANGE LATER
-		//change player's colour back to green
-		player.GetComponent<SpriteRenderer>().color = playerOgColour;
-	}
-	
-	IEnumerator DelayedMovePlayerBack(GameObject player) {
-		///wait for the delay timer amount of time, then move the player back
-		yield return new WaitForSeconds(deathDelayTimer);
-		MovePlayerToCheckpoint(player);
 	}
 	
 }

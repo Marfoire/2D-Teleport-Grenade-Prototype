@@ -158,6 +158,8 @@ public class ToolBehaviourRift : MonoBehaviour
         //wait for 10 seconds
         yield return new WaitForSecondsRealtime(10);
 
+        riftClosing = true;
+
         //while the rift is still visible
         while (transform.localScale.y > 0)
         {
@@ -174,15 +176,29 @@ public class ToolBehaviourRift : MonoBehaviour
 
     private void ReactivateTiles()
     {
-        /*if (playerReference.GetComponent<PlayerController>().inRift == true)
-        {
-            //game end the player here
-
-        }*/
 
         //for all the stored tile positions which contain rift tiles
         foreach (Vector3Int tilePos in affectedTiles)
         {
+            Debug.DrawRay(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, Color.red);
+
+            if (playerReference != null) {
+                if (playerReference.GetComponent<PlayerController>().inRift == true)
+                {
+                    RaycastHit2D playerKillCheck = Physics2D.Raycast(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, 0.1f);
+                    if (playerKillCheck)
+                    {
+                        if (playerKillCheck.collider.tag == "Player")
+                        {
+                            //game end the player here
+                            playerReference.GetComponent<PlayerHealth>().PlayerDeath();
+                        }
+                    }
+
+
+                }
+            }
+
             //set the tiles back to the default stage tile
             stageTilemap.SetTile(tilePos, defaultTile);
         }
