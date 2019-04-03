@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class GrenadeActionGeyser : AbstractGrenadeAction
 {
@@ -21,6 +22,7 @@ public class GrenadeActionGeyser : AbstractGrenadeAction
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        
         //store the collision in the collided surface variable
         collidedSurface = collision;
 
