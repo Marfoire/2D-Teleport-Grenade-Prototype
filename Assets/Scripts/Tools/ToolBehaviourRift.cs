@@ -60,7 +60,7 @@ public class ToolBehaviourRift : MonoBehaviour
         //tile track cycles is the vertical index of which tile is being scanned
         int tileTrackCycles = 0;
 
-        //the differences of the max x and y of the bounds multiplied together (2 is added to the x because the difference should be inclusive, it ends up bing 6x6)
+        //the differences of the max x and y of the bounds multiplied together (2 is added to the x because the difference should be inclusive, it ends up being 6x6)
         for (int i = 0; i <= ((fillBounds.max.x - fillBounds.min.x + 2) * (fillBounds.max.y - fillBounds.min.y)); i++)
         {
             //if the x index of the current tile is greater than the x range of the bounding box
@@ -155,8 +155,14 @@ public class ToolBehaviourRift : MonoBehaviour
             yield return new WaitForSecondsRealtime(0.008f);
         }
 
-        //wait for 10 seconds
-        yield return new WaitForSecondsRealtime(10);
+        
+        if(GetComponent<SpriteRenderer>().color.a > 0)
+        {
+            GetComponent<SpriteRenderer>().color = new Color(GetComponent<SpriteRenderer>().color.r, GetComponent<SpriteRenderer>().color.g, GetComponent<SpriteRenderer>().color.b, GetComponent<SpriteRenderer>().color.a - 0.0008823529f);
+            
+        }
+
+        yield return new WaitForSecondsRealtime(11);
 
         riftClosing = true;
 
