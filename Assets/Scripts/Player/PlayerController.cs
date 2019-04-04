@@ -70,6 +70,8 @@ public class PlayerController : MonoBehaviour
     //if there is an active rift in the scene
     public bool activeRift;
 
+    
+
     //event to delete any active rifts when a new rift grenade is thrown
     public UnityEvent overrideRift;
 
@@ -411,7 +413,6 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-
         //reset the player's drag at the start of fixed update, this is necessary because horizontal movement conditionally changes the drag of the player
         rb.drag = 1.4f;
 
@@ -441,6 +442,7 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
+
         //run once last check to see if position correction should be done
         CheckForLatePositionCorrection();
 
