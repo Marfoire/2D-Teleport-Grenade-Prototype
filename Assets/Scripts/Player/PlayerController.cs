@@ -75,6 +75,13 @@ public class PlayerController : MonoBehaviour
     //event to delete any active rifts when a new rift grenade is thrown
     public UnityEvent overrideRift;
 
+
+    // the animator
+    Animator animPAL;
+    // the shooting arm
+    public GameObject rotatingArm;
+    public bool LRF = false;
+
     void Awake()
     {
         //set up the rift event
@@ -99,6 +106,10 @@ public class PlayerController : MonoBehaviour
 
         //default throw height
         throwHeight = 150;
+
+        // get refrence to the animator
+        animPAL = gameObject.GetComponent<Animator>();
+        LRF = true;
     }
 
     //method for jumping
@@ -129,9 +140,13 @@ public class PlayerController : MonoBehaviour
     //handles horizontal movement, needs revamping
     public void HorizontalMovement()
     {
+        // if there is no input then the input bool in the animator is false
+        animPAL.SetBool("Input", false);
         //if the either of the input axis are receiving RAW input, start running some acceleration calculations (GetAxisRaw only returns 0,1,-1 based on what input is pressed)
         if (leftInputted == true || rightInputted == true)
         {
+            // setting the input value in animator to true
+            animPAL.SetBool("Input", true);
             //If the acceleration time is not 0
             if (AccelerationTime != 0)
             {
@@ -230,6 +245,8 @@ public class PlayerController : MonoBehaviour
             if (upwardsGeyser == false)//if the player isn't being pushed up by a geyser
             {
                 grounded = true;//set grounded to true
+                // set the grounded bool in the animator to true
+                animPAL.SetBool("grounded", true);
                 doubleJumpUsed = false;
                 isJumping = false;
                 rb.velocity = new Vector2(rb.velocity.x, 0);
@@ -240,6 +257,8 @@ public class PlayerController : MonoBehaviour
         else//if there are no collisions
         {
             grounded = false;//set grounded to false
+            // set the grounded bool in the animator to false
+            animPAL.SetBool("grounded", false);
             if (inGeyser == false)
             {
                 rb.gravityScale = 254.5f;
@@ -314,6 +333,12 @@ public class PlayerController : MonoBehaviour
         {
             if (!leftWallCheck || leftWallCheck.collider.isTrigger)
                 leftInputted = true;
+
+            // setting bools for the animator
+            animPAL.SetBool("IsFacingRight", false);
+            animPAL.SetBool("IsFacingLeft", true);
+            LRF = false;
+
             storedLastHorizontalInput = Input.GetAxisRaw("Horizontal");//store the input values in a vector2 for deceleration
         }
 
@@ -321,6 +346,12 @@ public class PlayerController : MonoBehaviour
         {
             if (!rightWallCheck || rightWallCheck.collider.isTrigger)
                 rightInputted = true;
+
+            // setting bools for the animator
+            animPAL.SetBool("IsFacingRight", true);
+            animPAL.SetBool("IsFacingLeft", false);
+            LRF = true;
+
             storedLastHorizontalInput = Input.GetAxisRaw("Horizontal");//store the input values in a vector2 for deceleration
         }
 
@@ -384,6 +415,18 @@ public class PlayerController : MonoBehaviour
         correctMyPosition = false;
     }
 
+    public void armCorrection()
+    {
+        if (LRF == true)
+        {
+            rotatingArm.transform.position = new Vector3(this.transform.position.x - 11, this.transform.position.y - 3,0); 
+        }
+        if (LRF == false)
+        {
+            rotatingArm.transform.position = new Vector3(this.transform.position.x + 11, this.transform.position.y - 3, 0);
+        }
+    }
+
     private void CastWallAndGroundedChecks()
     {
         //these lines are for visualizing the rays that are casted below
@@ -418,6 +461,9 @@ public class PlayerController : MonoBehaviour
 
         //check if the player is grounded
         CheckGrounded();
+
+        //flip the arm position
+        armCorrection();
 
         //call horizontal movement to check and ensure the player is moving if they are trying to move horizontally
         HorizontalMovement();
