@@ -10,6 +10,7 @@ public class GrenadeActionGeyser : AbstractGrenadeAction
 
     //reference to the geyser prefab that is instantiated in grenade action
     public GameObject geyserPrefab;
+    public GameObject ExplsoinPrefab;
 
     //collision2d variable to hold collision data sent through during the on collision enter check
     Collision2D collidedSurface;
@@ -42,6 +43,7 @@ public class GrenadeActionGeyser : AbstractGrenadeAction
         {
             //instantiate the geyser tool with the respective prefab
             GameObject geyser = Instantiate(geyserPrefab, (Vector2)transform.position - -stageCheck.normal, Quaternion.FromToRotation(transform.up, -stageCheck.normal));
+            Instantiate(ExplsoinPrefab, this.transform.position, Quaternion.identity);
 
             //set the geyser's initiate coroutine bool to true to start the call for it's behavioural couroutine, if it is directly called here, it will bug out when this is destroyed
             geyser.GetComponent<ToolBehaviourGeyser>().initiateCoroutine = true;

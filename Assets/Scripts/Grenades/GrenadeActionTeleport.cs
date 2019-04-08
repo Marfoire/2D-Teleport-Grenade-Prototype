@@ -9,6 +9,7 @@ public class GrenadeActionTeleport : AbstractGrenadeAction
 
     //collision2d variable to hold collision data sent through during the on collision enter check
     private Collision2D collidedSurface;
+    public GameObject ExplsoinPrefab;
 
     public GameObject particlePrefab;
 
@@ -39,11 +40,13 @@ public class GrenadeActionTeleport : AbstractGrenadeAction
             //transform.position = (Vector2)transform.position - Vector2.Lerp(transform.position, endPosition - (Vector2)transform.position, 0.2f);
             GameObject particles = Instantiate(particlePrefab, tossScriptReference.pScript.rb.position, Quaternion.identity);
             
+
             particles.GetComponent<ToolBehaviourTeleportParticle>().endPosition = GetComponent<Rigidbody2D>().position;
             particles.GetComponent<ToolBehaviourTeleportParticle>().startPosition = tossScriptReference.pScript.rb.position;
 
             //set the position of the player to the position of the grenade
             tossScriptReference.pScript.rb.position = GetComponent<Rigidbody2D>().position;
+            Instantiate(ExplsoinPrefab, tossScriptReference.pScript.rb.position, Quaternion.identity);
 
             //update the player's transform as well for accuracy
             tossScriptReference.pScript.transform.position = tossScriptReference.pScript.rb.position;
