@@ -17,6 +17,11 @@ public class Hazard : MonoBehaviour
 		if (col.gameObject.tag == "Player"){
             col.GetComponent<PlayerHealth>().PlayerDeath();
 		}	
+
+        if(col.gameObject.tag == "Enemy")
+        {
+            Destroy(col.gameObject);
+        }
 	}
 	
 }

@@ -11,7 +11,6 @@ public class ToolBehaviourTeleportParticle : MonoBehaviour
     private void Start()
     {
         speed = Vector2.Distance(endPosition,transform.position)/10;
-        print("boat");
         //transform.position = /*(Vector2)transform.position +*/ Vector2.LerpUnclamped(transform.position, endPosition - (Vector2)transform.position, -1);
 
         Debug.DrawLine(Vector2.LerpUnclamped(transform.position, endPosition - (Vector2)transform.position, -0.2f), endPosition, Color.yellow, 10000000);

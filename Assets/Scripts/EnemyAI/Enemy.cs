@@ -54,7 +54,7 @@ public abstract class Enemy : MonoBehaviour, IEnemy
         {
             // timer that counts up
             deathTimer += Time.deltaTime;
-            rb.transform.position = Vector2.MoveTowards(rb.transform.position, new Vector2(target.transform.position.x, rb.transform.position.y), movementSpeed * Time.deltaTime);
+            rb.transform.position = Vector2.MoveTowards(rb.transform.position, new Vector2(target.transform.position.x, rb.position.y), movementSpeed * Time.deltaTime);
             
             
 

@@ -21,7 +21,7 @@ public class ToolBehaviourGeyser : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         //if the object is tagged as the player or a moveable object
-        if (other.gameObject.tag == "Player" || other.gameObject.tag == "MoveableObject")
+        if (other.gameObject.tag == "Player" || other.gameObject.tag == "MoveableObject" || other.gameObject.tag == "Enemy")
         {
             //and if this geyser is not facing upwards
             if (transform.up != Vector3.up)
@@ -65,7 +65,7 @@ public class ToolBehaviourGeyser : MonoBehaviour
         }
 
         //if a moveable object enters the geyser
-        if (other.gameObject.tag == "MoveableObject")
+        if (other.gameObject.tag == "MoveableObject" || other.gameObject.tag == "Enemy")
         {
             //lower its gravity to the geyser pushes it harder
             other.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
@@ -87,7 +87,7 @@ public class ToolBehaviourGeyser : MonoBehaviour
         }
 
         //if a moveable object exits the geyser
-        if (other.gameObject.tag == "MoveableObject")
+        if (other.gameObject.tag == "MoveableObject" || other.gameObject.tag == "Enemy")
         {
             //reset that object's gravity
             other.gameObject.GetComponent<Rigidbody2D>().gravityScale = 254.5f;

@@ -30,6 +30,8 @@ public class ToolBehaviourRift : MonoBehaviour
     //reference to the player script
     public PlayerController playerReference;
 
+    List<GameObject> enemyReference = new List<GameObject>();
+
     //boolean to be set to true if the rift has started closing
     bool riftClosing;
 
@@ -129,6 +131,17 @@ public class ToolBehaviourRift : MonoBehaviour
             //tell them that they are in the rift
             playerReference.GetComponent<PlayerController>().inRift = true;
         }
+
+
+        
+        if (collision.tag == "Enemy")
+        {
+            if (!enemyReference.Contains(collision.gameObject))
+            {
+                enemyReference.Add(collision.gameObject);
+            }
+        }
+
     }
 
 
@@ -187,21 +200,30 @@ public class ToolBehaviourRift : MonoBehaviour
         foreach (Vector3Int tilePos in affectedTiles)
         {
             Debug.DrawRay(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, Color.red);
+            RaycastHit2D killCheck = Physics2D.Raycast(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, 0.1f);
 
             if (playerReference != null) {
                 if (playerReference.GetComponent<PlayerController>().inRift == true)
-                {
-                    RaycastHit2D playerKillCheck = Physics2D.Raycast(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, 0.1f);
-                    if (playerKillCheck)
+                {                    
+                    if (killCheck)
                     {
-                        if (playerKillCheck.collider.tag == "Player")
+                        if (killCheck.collider.tag == "Player")
                         {
                             //game end the player here
                             playerReference.GetComponent<PlayerHealth>().PlayerDeath();
                         }
                     }
+                }
+            }
 
-
+            if (enemyReference.Count > 0)
+            {
+                if (killCheck)
+                {
+                    if (enemyReference.Contains(killCheck.collider.gameObject))
+                    {
+                        Destroy(killCheck.collider.gameObject);
+                    }
                 }
             }
 
