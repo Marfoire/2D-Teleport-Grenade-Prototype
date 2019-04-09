@@ -7,4 +7,8 @@ public interface IEnemy
     void MoveEnemy();
     bool AttackRange();
     void Die();
+
+    
+
+
 }

@@ -19,9 +19,10 @@ public abstract class Enemy : MonoBehaviour, IEnemy
 
     private Rigidbody2D rb;
 
+    //declare the ColliderDistance2D check, this gives information on how to do hitbox correction
+    public ColliderDistance2D stageCheck;
 
-
-   public virtual void Start()
+    public virtual void Start()
     {
         // this timer is meant for the attack speed of the enemy. Again we don't need this at the moment
         timer += Time.deltaTime;
@@ -112,4 +113,54 @@ public abstract class Enemy : MonoBehaviour, IEnemy
 
 
     }
+
+
+    /*public void TryCorrectEnemyPosition()
+    {
+        //declare a contact filter
+        ContactFilter2D filter = new ContactFilter2D();
+        //declare a layer mask that uses the StageLayer
+        LayerMask stageMask = LayerMask.GetMask("StageLayer");
+
+        //set the contact filter's layer mask to the stage mask and make sure it is using the mask
+        filter.SetLayerMask(stageMask);
+        filter.useLayerMask = true;
+
+        //create an array that overlapping colliders can be sent to
+        Collider2D[] stageGrenadeColliders = new Collider2D[10];
+
+        //do an overlap collider check with the grenade's circle collider using the contact filter and outputting results to the previously declared array
+        GetComponent<BoxCollider2D>().OverlapCollider(filter, stageGrenadeColliders);
+
+        //for each collider that passes through the contact filter in the overlap collider check
+        foreach (Collider2D incomingCollider in stageGrenadeColliders)
+        {
+            //if the collider is not null 
+            if (incomingCollider != null)
+            {
+                //use the ColliderDistance2D to get information about the collider overlap, this compares the grenade circle collider to stage collider which comes in through incoming collider
+                stageCheck = GetComponent<BoxCollider2D>().Distance(incomingCollider);
+
+                //if the check is definitely overlapping and it is valid
+                if (stageCheck.isOverlapped && stageCheck.isValid)
+                {
+                    //Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);//draw a line to show the two points created THIS IS FOR DEBUGGING
+
+                    //create the correction vector, this is done by taking the normal (direction) of the stage check and the distance of the stage check and multiplying them together
+                    Vector2 correction = (stageCheck.normal * stageCheck.distance);
+                    //adjust the grenade rigidbody to be properly corrected outside of the stage collider
+                    GetComponent<Rigidbody2D>().position = GetComponent<Rigidbody2D>().position + correction;
+                    //adjust the transform to the new rigidbody position for accuracy
+                    transform.position = GetComponent<Rigidbody2D>().position;
+                }
+            }
+        }
+    }
+
+    void LateUpdate()
+    {
+        TryCorrectEnemyPosition();
+    }*/
+
+
 }
