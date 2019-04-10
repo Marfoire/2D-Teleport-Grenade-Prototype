@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GrenadeTossParabola : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class GrenadeTossParabola : MonoBehaviour
 
     float tempTime = 0;
 
-    Vector2 lastRBPosition;
+    public Vector2 lastRBPosition;
     Vector2 firstRBPosition;
 
     Vector3 result;
@@ -41,6 +42,7 @@ public class GrenadeTossParabola : MonoBehaviour
         h = pScript.throwHeight;
         someObject = transform;
         Physics2D.IgnoreCollision(pScript.bc, GetComponent<CircleCollider2D>());
+        pScript.GetComponent<PlayerHealth>().playerDied.AddListener(CancelGrenade);
     } 
 
     ///////////////////////////FOR TROUBLESHOOTING
@@ -118,6 +120,7 @@ public class GrenadeTossParabola : MonoBehaviour
             if (objectT < 1)
             {
                 GetComponent<Rigidbody2D>().position = LaunchParabola(a, b, h, objectT);
+                transform.position = GetComponent<Rigidbody2D>().position;
             }
             else if (breakParabola == false)
             {
@@ -133,6 +136,12 @@ public class GrenadeTossParabola : MonoBehaviour
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x - ((accelValue / (GetComponent<Rigidbody2D>().velocity.x)) * Time.fixedDeltaTime), (GetComponent<Rigidbody2D>().velocity.y + (gravValue /** 2*/ * Time.fixedDeltaTime)));
         }
     }
+
+   void CancelGrenade()
+    {
+        Destroy(gameObject);
+    }
+
 
     private void FixedUpdate()
     {

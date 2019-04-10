@@ -49,6 +49,11 @@ public class GrenadeActionRift : AbstractGrenadeAction
             //tell the player that there is now an active rift
             tossScriptReference.pScript.activeRift = true;
         }
+        else
+        {
+            GameObject explosion = Instantiate(ExplsoinPrefab, this.transform.position, Quaternion.identity);
+            explosion.transform.localScale = explosion.transform.localScale / 4;
+        }
 
         //set the player's bool restricting grenade throws to be false because the player should be able to throw grenades again
         tossScriptReference.pScript.preventGrenadeThrow = false;

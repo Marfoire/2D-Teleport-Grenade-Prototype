@@ -80,7 +80,6 @@ public class PlayerController : MonoBehaviour
     Animator animPAL;
     // the shooting arm
     public GameObject rotatingArm;
-    //public bool LRF;
 
     private bool faceValue;
     public bool LRF
@@ -127,7 +126,6 @@ public class PlayerController : MonoBehaviour
 
         // get refrence to the animator
         animPAL = gameObject.GetComponent<Animator>();
-        //LRF = true;
     }
 
     //method for jumping
@@ -240,8 +238,9 @@ public class PlayerController : MonoBehaviour
     {
         foreach (Collider2D incomingCollider in incomingColliders)
         {
-            if ((incomingCollider != null && incomingCollider.tag != "Geyser") || (incomingCollider != null && incomingCollider.tag == "Geyser" && upwardsGeyser == false))
+            if ((incomingCollider != null && incomingCollider.tag != "Geyser" && GetComponent<SpriteRenderer>().color != Color.red && incomingCollider.isTrigger == false) || (incomingCollider != null && incomingCollider.tag == "Geyser" && upwardsGeyser == false && GetComponent<SpriteRenderer>().color != Color.red && incomingCollider.isTrigger == false))
             {
+                print("epic victory royale");
                 ColliderDistance2D stageCheck = bc.Distance(incomingCollider);
                 if (stageCheck.isOverlapped && stageCheck.isValid)
                 {
@@ -332,7 +331,7 @@ public class PlayerController : MonoBehaviour
             preventGrenadeThrow = true;
             GameObject nadeObject = Instantiate(currentGrenadePrefab, transform.position, Quaternion.identity);
             nadeObject.GetComponent<GrenadeTossParabola>().GetInfo(this);
-            Physics2D.IgnoreCollision(nadeObject.GetComponent<CircleCollider2D>(), bc);
+            //Physics2D.IgnoreCollision(nadeObject.GetComponent<BoxCollider2D>(), bc);
             GetComponent<LineRenderer>().enabled = false;
 
             if (activeRift == true && currentGrenadePrefab.name == "Grenade_Rift")

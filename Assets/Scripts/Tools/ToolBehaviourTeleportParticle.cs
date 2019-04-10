@@ -11,22 +11,14 @@ public class ToolBehaviourTeleportParticle : MonoBehaviour
     private void Start()
     {
         speed = Vector2.Distance(endPosition,transform.position)/10;
-        //transform.position = /*(Vector2)transform.position +*/ Vector2.LerpUnclamped(transform.position, endPosition - (Vector2)transform.position, -1);
-
-        Debug.DrawLine(Vector2.LerpUnclamped(transform.position, endPosition - (Vector2)transform.position, -0.2f), endPosition, Color.yellow, 10000000);
-        Debug.DrawLine(Vector2.LerpUnclamped(transform.position, endPosition - (Vector2)transform.position, 0), endPosition, Color.green, 1000000);
-        Debug.DrawLine(Vector2.LerpUnclamped(transform.position, endPosition - (Vector2)transform.position, 0.2f), endPosition, Color.blue, 1000000);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-
-
-        if ((Vector2)transform.position == endPosition)
+        if ((Vector2)transform.position == endPosition && GetComponent<ParticleSystem>().particleCount == 0)
         {
-            //Destroy(gameObject);
+            Destroy(gameObject);
         }
         if (speed != 0)
         {

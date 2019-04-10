@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -10,6 +11,15 @@ public class PlayerHealth : MonoBehaviour
 
     //CHANGE LATER
     private Color playerOgColour;
+
+    public UnityEvent playerDied;
+
+    private void Awake()
+    {
+        //set up the kill event
+        playerDied = new UnityEvent();
+    }
+
 
     public void PlayerDeath()
     {
@@ -38,7 +48,10 @@ public class PlayerHealth : MonoBehaviour
     {
         ///wait for the delay timer amount of time, then move the player back
         yield return new WaitForSeconds(deathDelayTimer);
+        playerDied.Invoke();
         MovePlayerToCheckpoint(player);
+        player.GetComponent<PlayerController>().preventGrenadeThrow = false;
+        
     }
 
 }

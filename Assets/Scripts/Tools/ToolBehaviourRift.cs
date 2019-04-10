@@ -36,10 +36,13 @@ public class ToolBehaviourRift : MonoBehaviour
     bool riftClosing;
 
 
-    void Awake()
+    void Start()
     {
         //make sure the layer mask is a layer mask
         stageMask = LayerMask.GetMask("StageLayer");
+
+        playerReference.overrideRift.AddListener(ReactivateTiles);
+        playerReference.GetComponent<PlayerHealth>().playerDied.AddListener(ReactivateTiles);
     }
 
     private void ToggleTilesInRange()
@@ -199,7 +202,7 @@ public class ToolBehaviourRift : MonoBehaviour
         //for all the stored tile positions which contain rift tiles
         foreach (Vector3Int tilePos in affectedTiles)
         {
-            Debug.DrawRay(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, Color.red);
+            //Debug.DrawRay(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, Color.red);
             RaycastHit2D killCheck = Physics2D.Raycast(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, 0.1f);
 
             if (playerReference != null) {
@@ -252,7 +255,7 @@ public class ToolBehaviourRift : MonoBehaviour
         if (playerReference != null)
         {
             //establish a listener for when the player invokes the rift override event
-            playerReference.overrideRift.AddListener(ReactivateTiles);
+            
         }
 
     }

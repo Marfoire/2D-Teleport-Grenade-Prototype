@@ -33,7 +33,7 @@ public class GrenadeActionTeleport : AbstractGrenadeAction
     {
         //try to correct the grenade position before performing the grenade action
         TryCorrectGrenadePosition();
-
+        
         //if the grenade collided with something that wasn't the stage
         if (collidedSurface.gameObject.tag == "Stage")
         {
@@ -56,6 +56,11 @@ public class GrenadeActionTeleport : AbstractGrenadeAction
 
             //disable the player's double jump because that's cheating
             tossScriptReference.pScript.doubleJumpUsed = true;
+        }
+        else
+        {
+            GameObject explosion = Instantiate(ExplsoinPrefab, this.transform.position, Quaternion.identity);
+            explosion.transform.localScale = explosion.transform.localScale / 4;
         }
 
         //turn the prevent grenade throw bool off so the player can throw grenades again

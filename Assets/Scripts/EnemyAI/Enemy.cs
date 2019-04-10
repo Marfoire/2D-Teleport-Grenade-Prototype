@@ -16,23 +16,57 @@ public abstract class Enemy : MonoBehaviour, IEnemy
  
     public float enemyRadar;
 
+    public bool enemyInGeyser;
+    public bool upwardGeyserCheck;
+
 
     private Rigidbody2D rb;
 
     //declare the ColliderDistance2D check, this gives information on how to do hitbox correction
     public ColliderDistance2D stageCheck;
 
-    public virtual void Start()
+
+    //declare a contact filter
+    ContactFilter2D filter;
+    //declare a layer mask that uses the StageLayer
+    LayerMask stageMask;
+
+    RaycastHit2D groundedCheck;
+
+    BoxCollider2D bc;
+
+    public virtual void Awake()
     {
         // this timer is meant for the attack speed of the enemy. Again we don't need this at the moment
         timer += Time.deltaTime;
         // find object with the tag "player"
         target = GameObject.FindGameObjectWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
+
+        bc = GetComponent<BoxCollider2D>();
+
+
+        //declare a contact filter
+        filter = new ContactFilter2D();
+        //declare a layer mask that uses the StageLayer
+        stageMask = LayerMask.GetMask("StageLayer");
+
+        //set the contact filter's layer mask to the stage mask and make sure it is using the mask
+        filter.SetLayerMask(stageMask);
+        filter.useLayerMask = true;
     }
 
     public virtual void FixedUpdate()
     {
+            if (groundedCheck)
+            {
+                rb.gravityScale = 0;
+            }
+            else if (upwardGeyserCheck == false)
+            {
+                rb.gravityScale = 254.5f;
+            }
+
         MoveEnemy();
         Die();
 
@@ -49,15 +83,24 @@ public abstract class Enemy : MonoBehaviour, IEnemy
     // if the distance between the player and the enemy is less than the enemy radar range, the enemy will follow the player.
     public virtual void MoveEnemy()
     {
-        float distance = Vector2.Distance(target.transform.position, transform.position);
+        float distance = Vector2.Distance(target.transform.position, rb.position);
 
         if (distance <= enemyRadar)
         {
             // timer that counts up
             deathTimer += Time.deltaTime;
-            rb.transform.position = Vector2.MoveTowards(rb.transform.position, new Vector2(target.transform.position.x, rb.position.y), movementSpeed * Time.deltaTime);
-            
-            
+
+            RaycastHit2D leftWallCheck = Physics2D.Raycast(new Vector2((bc.bounds.center.x) - (bc.bounds.extents.x + 0.5f), bc.bounds.center.y - (bc.bounds.extents.y - 0.1f)), Vector2.up, (bc.bounds.extents.y * 2 - 0.8f), stageMask);
+            RaycastHit2D rightWallCheck = Physics2D.Raycast(new Vector2((bc.bounds.center.x) + (bc.bounds.extents.x + 0.5f), bc.bounds.center.y - (bc.bounds.extents.y - 0.1f)), Vector2.up, (bc.bounds.extents.y * 2 - 0.8f), stageMask);
+
+            if (target.transform.position.x - rb.position.x > 0 && rightWallCheck == false)
+            {
+                rb.velocity = new Vector2(100, rb.velocity.y);
+            }
+            else if (leftWallCheck == false)
+            {
+                rb.velocity = new Vector2(-100, rb.velocity.y);
+            }
 
         }
 
@@ -94,11 +137,11 @@ public abstract class Enemy : MonoBehaviour, IEnemy
     public virtual void Die()
     {
         
-        if (deathTimer >= timeAlive)
+        /*if (deathTimer >= timeAlive)
         {
             Destroy(this.gameObject);
         }
-
+        */
     }
 
     // this is the attack range for when the enemy can deal damage to the player. We do not need this at the moment
@@ -115,16 +158,9 @@ public abstract class Enemy : MonoBehaviour, IEnemy
     }
 
 
-    /*public void TryCorrectEnemyPosition()
+    public void TryCorrectEnemyPosition()
     {
-        //declare a contact filter
-        ContactFilter2D filter = new ContactFilter2D();
-        //declare a layer mask that uses the StageLayer
-        LayerMask stageMask = LayerMask.GetMask("StageLayer");
-
-        //set the contact filter's layer mask to the stage mask and make sure it is using the mask
-        filter.SetLayerMask(stageMask);
-        filter.useLayerMask = true;
+        
 
         //create an array that overlapping colliders can be sent to
         Collider2D[] stageGrenadeColliders = new Collider2D[10];
@@ -136,7 +172,7 @@ public abstract class Enemy : MonoBehaviour, IEnemy
         foreach (Collider2D incomingCollider in stageGrenadeColliders)
         {
             //if the collider is not null 
-            if (incomingCollider != null)
+            if (incomingCollider != null && !incomingCollider.gameObject.GetComponentInParent<ToolBehaviourGeyser>())
             {
                 //use the ColliderDistance2D to get information about the collider overlap, this compares the grenade circle collider to stage collider which comes in through incoming collider
                 stageCheck = GetComponent<BoxCollider2D>().Distance(incomingCollider);
@@ -159,8 +195,15 @@ public abstract class Enemy : MonoBehaviour, IEnemy
 
     void LateUpdate()
     {
-        TryCorrectEnemyPosition();
-    }*/
+        if (upwardGeyserCheck != true)
+        {
+            TryCorrectEnemyPosition();
+        }       
+
+        //Debug.DrawRay(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right * (bc.bounds.extents.x * 2 - 0.1f), Color.magenta);
+
+        groundedCheck = Physics2D.Raycast(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right, bc.bounds.extents.x * 2 - 0.1f, stageMask);
+    }
 
 
 }
