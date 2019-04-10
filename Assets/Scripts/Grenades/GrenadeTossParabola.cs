@@ -36,7 +36,7 @@ public class GrenadeTossParabola : MonoBehaviour
     public void GetInfo(PlayerController ps)
     {
         pScript = ps;
-        a = pScript.rb.position;
+        a = pScript.transform.GetChild(0).transform.position;
         b = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         h = pScript.throwHeight;
         someObject = transform;

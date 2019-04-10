@@ -80,7 +80,25 @@ public class PlayerController : MonoBehaviour
     Animator animPAL;
     // the shooting arm
     public GameObject rotatingArm;
-    public bool LRF = false;
+    //public bool LRF;
+
+    private bool faceValue;
+    public bool LRF
+    {
+        get { return faceValue; }
+        set
+        {
+            if (faceValue != value)
+            {
+                rotatingArm.transform.localPosition = new Vector3(-rotatingArm.transform.localPosition.x, rotatingArm.transform.localPosition.y, 0);
+            }
+
+            faceValue = value;
+          
+        }
+    }
+
+
 
     void Awake()
     {
@@ -109,7 +127,7 @@ public class PlayerController : MonoBehaviour
 
         // get refrence to the animator
         animPAL = gameObject.GetComponent<Animator>();
-        LRF = true;
+        //LRF = true;
     }
 
     //method for jumping
@@ -275,7 +293,7 @@ public class PlayerController : MonoBehaviour
             GetComponent<LineRenderer>().positionCount = (int)count + 1;
             for (float i = 0; i < count + 1; i++)
             {
-                Vector3 p = MapParabola(rb.position, Camera.main.ScreenToWorldPoint(Input.mousePosition), throwHeight, i / count);
+                Vector3 p = MapParabola(transform.GetChild(0).transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition), throwHeight, i / count);
                 GetComponent<LineRenderer>().SetPosition((int)i, new Vector3(p.x, p.y, -1));
             }
         }
@@ -337,7 +355,7 @@ public class PlayerController : MonoBehaviour
             // setting bools for the animator
             animPAL.SetBool("IsFacingRight", false);
             animPAL.SetBool("IsFacingLeft", true);
-            LRF = false;
+            LRF = true;
 
             storedLastHorizontalInput = Input.GetAxisRaw("Horizontal");//store the input values in a vector2 for deceleration
         }
@@ -350,7 +368,7 @@ public class PlayerController : MonoBehaviour
             // setting bools for the animator
             animPAL.SetBool("IsFacingRight", true);
             animPAL.SetBool("IsFacingLeft", false);
-            LRF = true;
+            LRF = false;
 
             storedLastHorizontalInput = Input.GetAxisRaw("Horizontal");//store the input values in a vector2 for deceleration
         }
@@ -415,18 +433,6 @@ public class PlayerController : MonoBehaviour
         correctMyPosition = false;
     }
 
-    public void armCorrection()
-    {
-        if (LRF == true)
-        {
-            rotatingArm.transform.position = new Vector3(this.transform.position.x - 11, this.transform.position.y - 3,0); 
-        }
-        if (LRF == false)
-        {
-            rotatingArm.transform.position = new Vector3(this.transform.position.x + 11, this.transform.position.y - 3, 0);
-        }
-    }
-
     private void CastWallAndGroundedChecks()
     {
         //these lines are for visualizing the rays that are casted below
@@ -462,8 +468,7 @@ public class PlayerController : MonoBehaviour
         //check if the player is grounded
         CheckGrounded();
 
-        //flip the arm position
-        armCorrection();
+        
 
         //call horizontal movement to check and ensure the player is moving if they are trying to move horizontally
         HorizontalMovement();
@@ -480,11 +485,6 @@ public class PlayerController : MonoBehaviour
         jumpInputted = false;
     }
 
-    /*private void Update()
-    {        
-        
-        
-    } */
 
     private void LateUpdate()
     {
