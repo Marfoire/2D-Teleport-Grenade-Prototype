@@ -103,6 +103,10 @@ public abstract class Enemy : MonoBehaviour, IEnemy
             }
 
         }
+        else
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        }
 
     }
 
