@@ -205,30 +205,36 @@ public class ToolBehaviourRift : MonoBehaviour
             //Debug.DrawRay(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, Color.red);
             RaycastHit2D killCheck = Physics2D.Raycast(stageTilemap.layoutGrid.GetCellCenterWorld(tilePos), Vector2.up, 0.1f);
 
-            if (playerReference != null) {
-                if (playerReference.GetComponent<PlayerController>().inRift == true)
-                {                    
-                    if (killCheck)
+            if (killCheck)
+            {
+
+                if (playerReference != null)
+                {
+                    if (playerReference.GetComponent<PlayerController>().inRift == true)
                     {
-                        if (killCheck.collider.tag == "Player")
-                        {
-                            //game end the player here
-                            playerReference.GetComponent<PlayerHealth>().PlayerDeath();
-                        }
+                            if (killCheck.collider.tag == "Player")
+                            {
+                                //game end the player here
+                                playerReference.GetComponent<PlayerHealth>().PlayerDeath();
+                            }
                     }
+                }
+
+                if (enemyReference.Count > 0)
+                {
+                        if (enemyReference.Contains(killCheck.collider.gameObject))
+                        {
+                            Destroy(killCheck.collider.gameObject);
+                        }
+                }
+
+
+                if (killCheck.collider.tag == "MoveableObject")
+                {
+                    killCheck.collider.gameObject.GetComponent<MoveableCrateScript>().ResetPos();
                 }
             }
 
-            if (enemyReference.Count > 0)
-            {
-                if (killCheck)
-                {
-                    if (enemyReference.Contains(killCheck.collider.gameObject))
-                    {
-                        Destroy(killCheck.collider.gameObject);
-                    }
-                }
-            }
 
             //set the tiles back to the default stage tile
             stageTilemap.SetTile(tilePos, defaultTile);
