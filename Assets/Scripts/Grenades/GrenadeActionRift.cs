@@ -52,7 +52,7 @@ public class GrenadeActionRift : AbstractGrenadeAction
         else
         {
             GameObject explosion = Instantiate(ExplsoinPrefab, this.transform.position, Quaternion.identity);
-            explosion.transform.localScale = explosion.transform.localScale / 4;
+            explosion.transform.localScale = explosion.transform.localScale / 5.333f;
         }
 
         //set the player's bool restricting grenade throws to be false because the player should be able to throw grenades again

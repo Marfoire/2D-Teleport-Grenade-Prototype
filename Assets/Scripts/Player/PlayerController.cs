@@ -240,11 +240,11 @@ public class PlayerController : MonoBehaviour
         {
             if ((incomingCollider != null && incomingCollider.tag != "Geyser" && GetComponent<SpriteRenderer>().color != Color.red && incomingCollider.isTrigger == false) || (incomingCollider != null && incomingCollider.tag == "Geyser" && upwardsGeyser == false && GetComponent<SpriteRenderer>().color != Color.red && incomingCollider.isTrigger == false))
             {
-                print("epic victory royale");
+                //print("epic victory royale");
                 ColliderDistance2D stageCheck = bc.Distance(incomingCollider);
                 if (stageCheck.isOverlapped && stageCheck.isValid)
                 {
-                    Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);
+                    //Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);
                     Vector2 correction = (stageCheck.normal * stageCheck.distance);
                     rb.position = rb.position + correction;
                     transform.position = rb.position;

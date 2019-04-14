@@ -19,9 +19,9 @@ public class PlayerArm : MonoBehaviour
             transform.GetComponentInChildren<SpriteRenderer>().color = transform.GetComponentInParent<SpriteRenderer>().color;
         }
 
-        if (transform.GetComponentInParent<LineRenderer>().enabled)
+        if (transform.GetComponentInParent<LineRenderer>().enabled && transform.GetComponentInParent<LineRenderer>().positionCount >= 3)
         {
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(Vector3.forward,transform.GetComponentInParent<LineRenderer>().GetPosition(1) - transform.position), 360);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(Vector3.forward,transform.GetComponentInParent<LineRenderer>().GetPosition(3) - transform.position), 360);
         }
     }
 }
