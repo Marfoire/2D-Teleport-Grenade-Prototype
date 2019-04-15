@@ -93,19 +93,19 @@ public abstract class Enemy : MonoBehaviour, IEnemy
             RaycastHit2D leftWallCheck = Physics2D.Raycast(new Vector2((bc.bounds.center.x) - (bc.bounds.extents.x + 0.5f), bc.bounds.center.y - (bc.bounds.extents.y - 0.1f)), Vector2.up, (bc.bounds.extents.y * 2 - 0.8f), stageMask);
             RaycastHit2D rightWallCheck = Physics2D.Raycast(new Vector2((bc.bounds.center.x) + (bc.bounds.extents.x + 0.5f), bc.bounds.center.y - (bc.bounds.extents.y - 0.1f)), Vector2.up, (bc.bounds.extents.y * 2 - 0.8f), stageMask);
 
-            if (target.transform.position.x - rb.position.x > 0 && rightWallCheck == false)
+            if (target.transform.position.x - rb.position.x > 0 && (rightWallCheck == false || rightWallCheck.collider.tag == "MoveableObject"))
             {
-                rb.velocity = new Vector2(100, rb.velocity.y);
+                rb.position = new Vector2(rb.position.x + (movementSpeed * Time.fixedDeltaTime), rb.position.y);
             }
-            else if (leftWallCheck == false)
+            else if (leftWallCheck == false || leftWallCheck.collider.tag == "MoveableObject")
             {
-                rb.velocity = new Vector2(-100, rb.velocity.y);
+                rb.position = new Vector2(rb.position.x + (-movementSpeed * Time.fixedDeltaTime), rb.position.y);
             }
 
         }
         else
         {
-            rb.velocity = new Vector2(0, rb.velocity.y);
+            //rb.velocity = new Vector2(0, rb.velocity.y);
         }
 
     }
@@ -164,8 +164,6 @@ public abstract class Enemy : MonoBehaviour, IEnemy
 
     public void TryCorrectEnemyPosition()
     {
-        
-
         //create an array that overlapping colliders can be sent to
         Collider2D[] stageGrenadeColliders = new Collider2D[10];
 
