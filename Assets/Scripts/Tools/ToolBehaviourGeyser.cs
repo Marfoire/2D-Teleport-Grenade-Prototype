@@ -43,6 +43,11 @@ public class ToolBehaviourGeyser : MonoBehaviour
 
         }
 
+        if (other.gameObject.tag == "MoveableObject")
+        {
+            other.gameObject.GetComponent<MoveableCrateScript>().CrateInGeyser = true;
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -74,7 +79,7 @@ public class ToolBehaviourGeyser : MonoBehaviour
         if (other.gameObject.tag == "MoveableObject")
         {
             //lower its gravity to the geyser pushes it harder
-            other.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+            other.gameObject.GetComponent<MoveableCrateScript>().CrateInGeyser = true;
 
         }
 
@@ -110,7 +115,7 @@ public class ToolBehaviourGeyser : MonoBehaviour
         if (other.gameObject.tag == "MoveableObject")
         {
             //reset that object's gravity
-            other.gameObject.GetComponent<Rigidbody2D>().gravityScale = 254.5f;
+            other.gameObject.GetComponent<MoveableCrateScript>().CrateInGeyser = false;
         }
 
         if (other.gameObject.tag == "Enemy")

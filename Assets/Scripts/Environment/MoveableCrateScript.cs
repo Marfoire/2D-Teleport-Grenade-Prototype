@@ -7,6 +7,30 @@ public class MoveableCrateScript : MonoBehaviour
     public Vector3 startingPos;
     public Vector3 startingRot;
 
+    private bool geyserBoolValue;
+
+    public bool CrateInGeyser
+    {
+        get { return geyserBoolValue; }
+        set
+        {
+            if (value == true)
+            {
+                geyserBoolValue = true;
+                GetComponent<Rigidbody2D>().gravityScale = 0;
+            }
+
+            else if (value == false)
+            {
+                geyserBoolValue = false;
+                GetComponent<Rigidbody2D>().gravityScale = 254.5f;
+            }
+
+        }
+    }
+
+
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -20,6 +44,4 @@ public class MoveableCrateScript : MonoBehaviour
         GetComponent<Rigidbody2D>().position = startingPos;
         transform.position = startingPos;
     }
-
-
 }

@@ -9,9 +9,10 @@ public class GrenadeActionTeleport : AbstractGrenadeAction
 
     //collision2d variable to hold collision data sent through during the on collision enter check
     private Collision2D collidedSurface;
-    public GameObject ExplsoinPrefab;
 
     public GameObject particlePrefab;
+
+    public GameObject explosionPrefab;
 
     private void Awake()
     {
@@ -46,7 +47,8 @@ public class GrenadeActionTeleport : AbstractGrenadeAction
 
             //set the position of the player to the position of the grenade
             tossScriptReference.pScript.rb.position = GetComponent<Rigidbody2D>().position;
-            Instantiate(ExplsoinPrefab, tossScriptReference.pScript.rb.position, Quaternion.identity);
+
+            StartExplosion(GetComponentInChildren<SpriteRenderer>().color, 'M', explosionPrefab);
 
             //update the player's transform as well for accuracy
             tossScriptReference.pScript.transform.position = tossScriptReference.pScript.rb.position;
@@ -59,8 +61,7 @@ public class GrenadeActionTeleport : AbstractGrenadeAction
         }
         else
         {
-            GameObject explosion = Instantiate(ExplsoinPrefab, this.transform.position, Quaternion.identity);
-            explosion.transform.localScale = explosion.transform.localScale / 4;
+            StartExplosion(GetComponentInChildren<SpriteRenderer>().color, 'S', explosionPrefab);
         }
 
         //turn the prevent grenade throw bool off so the player can throw grenades again

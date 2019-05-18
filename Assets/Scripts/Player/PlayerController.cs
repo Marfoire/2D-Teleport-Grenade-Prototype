@@ -57,6 +57,8 @@ public class PlayerController : MonoBehaviour
     //boolean that is true when the player is inside a geyser that is pushing them upwards
     public bool upwardsGeyser;
 
+    public bool inSingularity;
+
     //float that holds the throw height of the grenade parabola, defaults to 150
     public float throwHeight;
 
@@ -75,6 +77,9 @@ public class PlayerController : MonoBehaviour
     //event to delete any active rifts when a new rift grenade is thrown
     public UnityEvent overrideRift;
 
+    public UnityEvent overrideLeash;
+
+    public UnityEvent overrideSingularity;
 
     // the animator
     Animator animPAL;
@@ -104,6 +109,10 @@ public class PlayerController : MonoBehaviour
         //set up the rift event
         overrideRift = new UnityEvent();
 
+        overrideLeash = new UnityEvent();
+
+        overrideSingularity = new UnityEvent();
+
         //make sure the contact filter is a contact filter
         filter = new ContactFilter2D();
 
@@ -132,7 +141,7 @@ public class PlayerController : MonoBehaviour
     void JumpCall()
     {
 
-        if (!doubleJumpUsed && !grounded && jumpInputted && inGeyser == false)
+        if (!doubleJumpUsed && !grounded && jumpInputted && inGeyser == false && inSingularity == false)
         {
             rb.velocity = Vector2.zero;
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + jumpVelocity);
@@ -205,7 +214,7 @@ public class PlayerController : MonoBehaviour
             totalVelocity = 0;//set the total velocity back to 0 to fix that
         }
 
-        if (inGeyser == false && rb.velocity.x != 0)
+        if (inGeyser == false && inSingularity == false && rb.velocity.x != 0)
         {
             if (rb.velocity.x > -15 && rb.velocity.x < 15)
                 rb.velocity = new Vector2(0, rb.velocity.y);
@@ -244,7 +253,7 @@ public class PlayerController : MonoBehaviour
                 ColliderDistance2D stageCheck = bc.Distance(incomingCollider);
                 if (stageCheck.isOverlapped && stageCheck.isValid)
                 {
-                    //Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);
+                    Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);
                     Vector2 correction = (stageCheck.normal * stageCheck.distance);
                     rb.position = rb.position + correction;
                     transform.position = rb.position;
@@ -276,7 +285,7 @@ public class PlayerController : MonoBehaviour
             grounded = false;//set grounded to false
             // set the grounded bool in the animator to false
             animPAL.SetBool("grounded", false);
-            if (inGeyser == false)
+            if (inGeyser == false && inSingularity == false)
             {
                 rb.gravityScale = 254.5f;
             }
@@ -331,12 +340,19 @@ public class PlayerController : MonoBehaviour
             preventGrenadeThrow = true;
             GameObject nadeObject = Instantiate(currentGrenadePrefab, transform.position, Quaternion.identity);
             nadeObject.GetComponent<GrenadeTossParabola>().GetInfo(this);
-            //Physics2D.IgnoreCollision(nadeObject.GetComponent<BoxCollider2D>(), bc);
             GetComponent<LineRenderer>().enabled = false;
 
             if (activeRift == true && currentGrenadePrefab.name == "Grenade_Rift")
             {
                 overrideRift.Invoke();
+            }
+            else if(currentGrenadePrefab.name == "Grenade_Leash")
+            {
+                overrideLeash.Invoke();
+            }
+            else if (currentGrenadePrefab.name == "Grenade_Singularity")
+            {
+                overrideSingularity.Invoke();
             }
 
         }

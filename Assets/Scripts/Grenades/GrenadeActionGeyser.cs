@@ -10,7 +10,9 @@ public class GrenadeActionGeyser : AbstractGrenadeAction
 
     //reference to the geyser prefab that is instantiated in grenade action
     public GameObject geyserPrefab;
-    public GameObject ExplsoinPrefab;
+
+
+    public GameObject explosionPrefab;
 
     //collision2d variable to hold collision data sent through during the on collision enter check
     Collision2D collidedSurface;
@@ -45,16 +47,16 @@ public class GrenadeActionGeyser : AbstractGrenadeAction
         {
 
             GameObject geyser = Instantiate(geyserPrefab, (Vector2)transform.position - -stageCheck.normal, Quaternion.FromToRotation(transform.up, -stageCheck.normal));
-            Instantiate(ExplsoinPrefab, transform.position, Quaternion.identity);
+
+            StartExplosion(GetComponentInChildren<SpriteRenderer>().color, 'L', explosionPrefab);
 
             //set the geyser's initiate coroutine bool to true to start the call for it's behavioural couroutine, if it is directly called here, it will bug out when this is destroyed
             geyser.GetComponent<ToolBehaviourGeyser>().initiateCoroutine = true;
             geyser.GetComponent<ToolBehaviourGeyser>().playerReference = tossScriptReference.pScript;
         }
         else
-        {         
-            GameObject explosion = Instantiate(ExplsoinPrefab, this.transform.position, Quaternion.identity);
-            explosion.transform.localScale = explosion.transform.localScale / 5.333f;
+        {
+            StartExplosion(GetComponentInChildren<SpriteRenderer>().color, 'S', explosionPrefab);
         }
 
         //set the player's bool restricting grenade throws to be false because the player should be able to throw grenades again

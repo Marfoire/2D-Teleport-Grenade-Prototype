@@ -1,53 +1,55 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
-public class GrenadeActionLeash : AbstractGrenadeAction
+public class GrenadeActionSingularity : AbstractGrenadeAction
 {
-    //reference to the toss script of this grenade
+    //declare a variable to hold a reference to the toss script on this grenade
     private GrenadeTossParabola tossScriptReference;
 
-    //reference to the geyser prefab that is instantiated in grenade action
-    public GameObject leashPrefab;
+    //
+    public GameObject singularityPrefab;
+
+
+    public GameObject explosionPrefab;
 
     //collision2d variable to hold collision data sent through during the on collision enter check
     Collision2D collidedSurface;
 
-    public GameObject explosionPrefab;
-
     private void Awake()
     {
-        //set the toss script reference
+        //get a reference to the toss script for this grenade
         tossScriptReference = GetComponent<GrenadeTossParabola>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-
         //store the collision in the collided surface variable
         collidedSurface = collision;
 
-        //call the grenade action
+        //call the grenade's action when it collides with something
         GrenadeAction();
-
     }
-
 
     public override void GrenadeAction()
     {
         //try to correct the position
-        //TryCorrectGrenadePosition();
+        TryCorrectGrenadePosition();
 
         //if the grenade collided with something that wasn't the stage
         if (collidedSurface.gameObject.tag == "Stage")
         {
-            GameObject leash = Instantiate(leashPrefab, collidedSurface.gameObject.GetComponentInParent<Grid>().GetCellCenterWorld(collidedSurface.gameObject.GetComponentInParent<Grid>().WorldToCell(collidedSurface.GetContact(0).point + (collidedSurface.GetContact(0).separation * collidedSurface.GetContact(0).normal))), Quaternion.identity);       
+            //instantiate the rift tool with the respective prefab
+            GameObject singularity = Instantiate(singularityPrefab, (Vector2)transform.position, Quaternion.identity);
 
-            leash.GetComponent<ToolBehaviourLeash>().initiateCoroutine = true;
-            leash.GetComponent<ToolBehaviourLeash>().playerReference = tossScriptReference.pScript;
 
             StartExplosion(GetComponentInChildren<SpriteRenderer>().color, 'L', explosionPrefab);
+
+            //set the rift's initiate coroutine bool to true to start the call for it's behavioural couroutine, if it is directly called here, it will bug out when this is destroyed
+            singularity.GetComponent<ToolBehaviourSingularity>().initiateCoroutine = true;
+
+            //get a player script reference
+            singularity.GetComponent<ToolBehaviourSingularity>().playerReference = tossScriptReference.pScript;
         }
         else
         {

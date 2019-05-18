@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ExplosionEffect : MonoBehaviour
+public class ToolBehaviourExplosionEffect : MonoBehaviour
 {
 
     public float GrenadeLiveTime = 1.5f;

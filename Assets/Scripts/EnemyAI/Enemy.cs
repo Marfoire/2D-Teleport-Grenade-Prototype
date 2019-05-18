@@ -19,6 +19,8 @@ public abstract class Enemy : MonoBehaviour, IEnemy
     public bool enemyInGeyser;
     public bool upwardGeyserCheck;
 
+    public bool enemyInSingularity;
+
 
     private Rigidbody2D rb;
 
@@ -62,12 +64,17 @@ public abstract class Enemy : MonoBehaviour, IEnemy
             {
                 rb.gravityScale = 0;
             }
-            else if (upwardGeyserCheck == false)
+            else if (upwardGeyserCheck == false && enemyInSingularity == false)
             {
                 rb.gravityScale = 254.5f;
             }
 
+        
+
         MoveEnemy();
+
+        
+
         Die();
 
         // This is for attacking the player if we decide to add a health value to the player instead of instant death
@@ -95,18 +102,33 @@ public abstract class Enemy : MonoBehaviour, IEnemy
 
             if (target.transform.position.x - rb.position.x > 0 && (rightWallCheck == false || rightWallCheck.collider.tag == "MoveableObject"))
             {
-                rb.position = new Vector2(rb.position.x + (movementSpeed * Time.fixedDeltaTime), rb.position.y);
+                if (enemyInGeyser || enemyInSingularity)
+                {
+                    rb.position = new Vector2(rb.position.x + (movementSpeed * Time.fixedDeltaTime), rb.position.y);                    
+                }
+                else if(rb.velocity.x <= 100)
+                {
+                    rb.velocity = new Vector2(100, rb.velocity.y);
+                }                
             }
             else if (leftWallCheck == false || leftWallCheck.collider.tag == "MoveableObject")
-            {
-                rb.position = new Vector2(rb.position.x + (-movementSpeed * Time.fixedDeltaTime), rb.position.y);
+            {               
+                if (enemyInGeyser || enemyInSingularity)
+                {
+                    rb.position = new Vector2(rb.position.x + (-movementSpeed * Time.fixedDeltaTime), rb.position.y);
+                }
+                else if (rb.velocity.x >= -100)
+                {
+                    rb.velocity = new Vector2(-100, rb.velocity.y);
+                }
             }
-
         }
-        else
+        else if(rb.velocity.x != 0 && enemyInGeyser == false && enemyInSingularity == false)
         {
-            //rb.velocity = new Vector2(0, rb.velocity.y);
+            rb.velocity = new Vector2(0, rb.velocity.y);
         }
+
+        
 
     }
 
@@ -182,30 +204,41 @@ public abstract class Enemy : MonoBehaviour, IEnemy
                 //if the check is definitely overlapping and it is valid
                 if (stageCheck.isOverlapped && stageCheck.isValid)
                 {
-                    //Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);//draw a line to show the two points created THIS IS FOR DEBUGGING
+                    Debug.DrawLine(stageCheck.pointB, stageCheck.pointA, Color.cyan);//draw a line to show the two points created THIS IS FOR DEBUGGING
 
                     //create the correction vector, this is done by taking the normal (direction) of the stage check and the distance of the stage check and multiplying them together
                     Vector2 correction = (stageCheck.normal * stageCheck.distance);
                     //adjust the grenade rigidbody to be properly corrected outside of the stage collider
-                    GetComponent<Rigidbody2D>().position = GetComponent<Rigidbody2D>().position + correction;
+                    transform.position = (Vector2)transform.position + correction;
                     //adjust the transform to the new rigidbody position for accuracy
-                    transform.position = GetComponent<Rigidbody2D>().position;
+                   // transform.position = GetComponent<Rigidbody2D>().position;
                 }
             }
         }
     }
 
-    void LateUpdate()
+    void Update()
     {
         if (upwardGeyserCheck != true)
         {
             TryCorrectEnemyPosition();
-        }       
+        }
 
-        //Debug.DrawRay(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right * (bc.bounds.extents.x * 2 - 0.1f), Color.magenta);
+        
+
+        Debug.DrawRay(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right * (bc.bounds.extents.x * 2 - 0.1f), Color.magenta);
 
         groundedCheck = Physics2D.Raycast(new Vector2(0.1f + bc.bounds.center.x - (bc.bounds.extents.x), rb.position.y - (bc.bounds.extents.y + 0.1f)), Vector2.right, bc.bounds.extents.x * 2 - 0.1f, stageMask);
     }
+
+    void LateUpdate()
+    {
+        if (enemyInGeyser == false)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -1000000, 0));
+        }
+    }
+
 
 
 }

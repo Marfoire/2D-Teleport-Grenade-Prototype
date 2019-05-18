@@ -9,7 +9,9 @@ public class GrenadeActionRift : AbstractGrenadeAction
 
     //reference to the rift prefab that is instantiated in grenade action
     public GameObject riftPrefab;
-    public GameObject ExplsoinPrefab;
+
+
+    public GameObject explosionPrefab;
 
     //collision2d variable to hold collision data sent through during the on collision enter check
     Collision2D collidedSurface;
@@ -39,7 +41,10 @@ public class GrenadeActionRift : AbstractGrenadeAction
         {
             //instantiate the rift tool with the respective prefab
             GameObject rift = Instantiate(riftPrefab, (Vector2)transform.position, Quaternion.identity);
-            Instantiate(ExplsoinPrefab, this.transform.position, Quaternion.identity);
+
+
+            StartExplosion(GetComponentInChildren<SpriteRenderer>().color, 'L', explosionPrefab);
+
             //set the rift's initiate coroutine bool to true to start the call for it's behavioural couroutine, if it is directly called here, it will bug out when this is destroyed
             rift.GetComponent<ToolBehaviourRift>().initiateCoroutine = true;
 
@@ -51,8 +56,7 @@ public class GrenadeActionRift : AbstractGrenadeAction
         }
         else
         {
-            GameObject explosion = Instantiate(ExplsoinPrefab, this.transform.position, Quaternion.identity);
-            explosion.transform.localScale = explosion.transform.localScale / 5.333f;
+            StartExplosion(GetComponentInChildren<SpriteRenderer>().color, 'S', explosionPrefab);
         }
 
         //set the player's bool restricting grenade throws to be false because the player should be able to throw grenades again

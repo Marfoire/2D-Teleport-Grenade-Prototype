@@ -53,4 +53,30 @@ public abstract class AbstractGrenadeAction : MonoBehaviour
         }
     }
 
+    public void StartExplosion(Color c, char size, GameObject explosionObject)
+    {
+
+        if(size == 'L')
+        {
+            GameObject explosion = Instantiate(explosionObject, transform.position, Quaternion.identity);
+            explosion.GetComponent<SpriteRenderer>().color = c;
+        }
+
+        else if (size == 'S')
+        {
+            GameObject explosion = Instantiate(explosionObject, transform.position, Quaternion.identity);
+            explosion.transform.localScale = new Vector2(15,15);
+            explosion.GetComponent<SpriteRenderer>().color = c;
+        }
+
+        else if (size == 'M')
+        {
+            GameObject explosion = Instantiate(explosionObject, transform.position, Quaternion.identity);
+            explosion.transform.localScale = new Vector2(60, 60);
+            explosion.GetComponent<SpriteRenderer>().color = c;
+        }
+    }
+
+
+
 }
