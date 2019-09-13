@@ -5,12 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class Restart : MonoBehaviour
 {
-    private Scene scene;
+    public Object scene;
 
     // Start is called before the first frame update
     void Start()
     {
-        scene = SceneManager.GetActiveScene(); 
+        
     }
 
     private void OnTriggerEnter2D (Collider2D other)
@@ -19,10 +19,6 @@ public class Restart : MonoBehaviour
         {
             SceneManager.LoadScene(scene.name);
         }
-        else 
-        {
-
-
-        }
+        
     }
 }
