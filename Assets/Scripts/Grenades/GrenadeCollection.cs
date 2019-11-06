@@ -7,23 +7,44 @@ public class GrenadeCollection : MonoBehaviour
 
     public PlayerController playerCon;
 
-    public GameObject[] GrenadeArray1;
-    public GameObject[] GrenadeArray2;
-    public GameObject[] GrenadeArray3;
-    // Start is called before the first frame update
-    void Start()
-    {
-        playerCon = GetComponent<PlayerController>();
-    }
+    public GameObject[] GrenadeArray;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public GameObject GrenadeDum;
+    public GameObject GrenadeTel;
+    public GameObject GrenadeRif;
+    public GameObject GrenadeGey;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        playerCon.grenadeTypePrefabs = GrenadeArray1;
+        if (other.gameObject.tag == "Player")
+        {
+            
+            if (this.gameObject.tag == "GP1")
+            {
+                playerCon.grenadeTypePrefabs = new GameObject[GrenadeArray.Length];
+                playerCon.grenadeTypePrefabs[0] = GrenadeDum;
+                playerCon.grenadeTypePrefabs[1] = GrenadeTel;
+                
+            }
+            if (this.gameObject.tag == "GP2")
+            {
+                playerCon.grenadeTypePrefabs = new GameObject[GrenadeArray.Length];
+                playerCon.grenadeTypePrefabs[0] = GrenadeDum;
+                playerCon.grenadeTypePrefabs[1] = GrenadeTel;
+                playerCon.grenadeTypePrefabs[2] = GrenadeGey;
+                
+            }
+            if (this.gameObject.tag == "GP3")
+            {
+                playerCon.grenadeTypePrefabs = new GameObject[GrenadeArray.Length];
+                playerCon.grenadeTypePrefabs[0] = GrenadeDum;
+                playerCon.grenadeTypePrefabs[1] = GrenadeTel;
+                playerCon.grenadeTypePrefabs[2] = GrenadeGey;
+                playerCon.grenadeTypePrefabs[3] = GrenadeRif;
+
+                
+            }
+            Destroy(this.gameObject);
+        }
     }
 }
