@@ -7,6 +7,7 @@ public class DoorButtonController : MonoBehaviour
     public bool DoorUseMotion;
     public bool DoorIsOn;
     public MotionDetection MD;
+    public Button BP;
     public Animator anim;
     public GameObject DoorCol;
     
@@ -21,18 +22,34 @@ public class DoorButtonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(BP == null)
+        {
+            DoorUseMotion = true;
+        }
 
+        if (DoorUseMotion == false)
+        {
+            anim.SetBool("DoorIsOn", BP.ButtonPressed);
+            if (BP.ButtonPressed == true)
+            {
+                DoorIsOn = true;
+            }
+            if (BP.ButtonPressed == false)
+            {
+                DoorIsOn = false;
+            }
+        }
         
         if (DoorUseMotion == true)
         {
+            
+            anim.SetBool("DoorIsOn", MD.Open);
             if (MD.Open == true)
             {
-                anim.SetBool("DoorIsOn", MD.Open);
                 DoorIsOn = true;
             }
             if (MD.Open == false)
-            {
-                anim.SetBool("DoorIsOn", MD.Open);
+            {   
                 DoorIsOn = false;
             }
 
