@@ -25,9 +25,20 @@ public class Button : MonoBehaviour
         if(other.tag == "Player" || other.tag == "Grenade" || other.tag == "MoveableObject")
         {
             ButtonPressed = true;
-            StartCoroutine(ButtonTimer());
+            
         }
     }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.tag == "Player" || other.tag == "Grenade" || other.tag == "MoveableObject")
+        {
+
+            StartCoroutine(ButtonTimer());
+        }
+
+    }
+
 
     IEnumerator ButtonTimer()
     {
