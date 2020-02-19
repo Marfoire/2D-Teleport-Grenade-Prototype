@@ -8,9 +8,13 @@ public class PlayerCollectables : MonoBehaviour
     public int totalCollected;
     public Text CoinText;
 
+    private void Awake()
+    {
+        CoinText.text = ("Coins: " + VariableHolder.CoinCount);
+    }
     public void IncrementCollected() {
         //increment total by 1 nwhen collected
-        totalCollected++;
+        VariableHolder.CoinCount = VariableHolder.CoinCount + 1;
         // change the text when the coins are collected
         IncrementCounter();
     }
@@ -18,7 +22,7 @@ public class PlayerCollectables : MonoBehaviour
     public void IncrementCounter()
     {
 
-        CoinText.text = ("Coins: " + totalCollected);
+        CoinText.text = ("Coins: " + VariableHolder.CoinCount);
 
     }
 }
